@@ -44,6 +44,12 @@ async function run() {
     const jobsCollection = DB.collection('jobs')
 
 
+    // service related api
+    app.get('/all-jobs', async (req, res) => {
+      const cursor = jobsCollection.find();
+      const result = await cursor.toArray();
+      res.send(result);
+    })
 
 
     // Send a ping to confirm a successful connection
