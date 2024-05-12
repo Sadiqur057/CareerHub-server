@@ -57,6 +57,20 @@ async function run() {
       res.send(result);
     })
 
+    app.get('/search/:keyword', async (req, res) => {
+      const keyword = req.params.keyword;
+      const cursor = foodsCollection.find({
+        $and: [
+          { food_name: { $regex: keyword, $options: 'i' } },
+          { food_status: "available" }
+        ]
+      })
+      const result = await cursor.toArray();
+      res.send(result)
+    })
+
+
+
 
 
     // Send a ping to confirm a successful connection
