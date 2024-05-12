@@ -68,6 +68,18 @@ async function run() {
     const requestedFoodCollection = DB.collection('requested-food')
 
 
+    // auth related api
+    app.post('/jwt', async (req, res) => {
+      const user = req.body;
+      console.log('user for token', user)
+      const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1hr' })
+      res.cookie('token', token, {
+        httpOnly: true,
+        secure: true,
+        sameSite: 'none'
+      }).send({ success: true })
+    })
+
 
 
     // service related api
