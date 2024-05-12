@@ -123,6 +123,35 @@ async function run() {
       res.send(result)
     })
 
+    app.put('/edit-food/:id', async (req, res) => {
+      const foodData = req.body;
+      const id = foodData.id;
+      console.log(foodData)
+      const filter = { _id: new ObjectId(id) }
+      console.log(id)
+      const options = { upsert: true }
+      const food_name = foodData.food_name;
+      const image = foodData.image
+      const location = foodData.location
+      const expired_date = foodData.expired_date
+      const notes = foodData.notes
+      const food_status = foodData.food_status
+      const food_quantity = foodData.food_quantity
+      const updatedDoc = {
+        $set: {
+          food_name: food_name,
+          image: image,
+          food_quantity: food_quantity,
+          location: location,
+          expired_date: expired_date,
+          notes: notes,
+          food_status: food_status
+        }
+      }
+      const result = await foodsCollection.updateOne(filter, updatedDoc, options)
+      console.log(result);
+      res.send(result)
+    })
 
 
 
