@@ -153,6 +153,20 @@ async function run() {
       res.send(result)
     })
 
+    app.put('/update-food/:id', async (req, res) => {
+      const id = req.params.id
+      console.log(id)
+      const filter = { _id: new ObjectId(id) }
+      const options = { upsert: true }
+      const updatedDoc = {
+        $set: {
+          food_status: 'requested'
+        }
+      }
+      const result = await foodsCollection.updateOne(filter, updatedDoc, options)
+      console.log(result);
+      res.send(result)
+    })
 
 
 
