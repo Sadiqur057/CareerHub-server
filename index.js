@@ -7,6 +7,7 @@ const cookieParser = require('cookie-parser')
 const app = express();
 const port = process.env.PORT || 5000;
 
+
 // middleware
 app.use(cors({
   origin: [
@@ -19,7 +20,8 @@ app.use(express.json());
 app.use(cookieParser())
 
 
-// 5PAqjnnjxBYB5eai careerhub
+
+
 
 console.log(process.env.DB_PASS)
 
@@ -37,23 +39,28 @@ const client = new MongoClient(uri, {
 async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
-    await client.connect();
+    // await client.connect();
 
 
-    const DB = client.db('CareerHubDB')
-    const jobsCollection = DB.collection('jobs')
+    const DB = client.db('tastyBites')
+    const foodsCollection = DB.collection('foods')
+    const requestedFoodCollection = DB.collection('requested-food')
+
+
 
 
     // service related api
-    app.get('/all-jobs', async (req, res) => {
-      const cursor = jobsCollection.find();
+    app.get('/all-foods', async (req, res) => {
+      const query = { food_status: "available" }
+      const cursor = foodsCollection.find(query);
       const result = await cursor.toArray();
       res.send(result);
     })
 
 
+
     // Send a ping to confirm a successful connection
-    await client.db("admin").command({ ping: 1 });
+    // await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } finally {
     // Ensures that the client will close when you finish/error
