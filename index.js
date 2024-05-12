@@ -69,6 +69,16 @@ async function run() {
       res.send(result)
     })
 
+    // get specific food details
+    app.get('/food-details/', logger, verifyToken, async (req, res) => {
+      const id = req.query.id;
+      const email = req.query.email;
+      console.log(id,email)
+      // const id = req.params.id;
+      const query = { _id: new ObjectId(id) }
+      const result = await foodsCollection.findOne(query);
+      res.send(result);
+    })
 
 
 
