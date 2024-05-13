@@ -134,6 +134,9 @@ async function run() {
     app.get('/my-foods/:email', logger, verifyToken, async (req, res) => {
       const email = req.params.email;
       
+      if(req.user.email !== email){
+        return res.status(403).send({ message: "forbidden access"})
+      }
       const query = { user_email: email }
       console.log(email)
       const cursor = foodsCollection.find(query);
