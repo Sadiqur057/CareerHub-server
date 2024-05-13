@@ -42,8 +42,6 @@ const verifyToken = (req, res, next) => {
 }
 
 
-// 5PAqjnnjxBYB5eai careerhub
-
 console.log(process.env.DB_PASS)
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.x7pm4nr.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
@@ -112,7 +110,9 @@ async function run() {
       const id = req.query.id;
       const email = req.query.email;
       console.log(id,email)
-      // const id = req.params.id;
+      if(req.user.email !== email){
+        return res.status(403).send({ message: "forbidden access"})
+      }
       const query = { _id: new ObjectId(id) }
       const result = await foodsCollection.findOne(query);
       res.send(result);
@@ -131,8 +131,9 @@ async function run() {
       res.send(result);
     })
 
-    app.get('/my-foods/:email', async (req, res) => {
+    app.get('/my-foods/:email', logger, verifyToken, async (req, res) => {
       const email = req.params.email;
+      
       const query = { user_email: email }
       console.log(email)
       const cursor = foodsCollection.find(query);
