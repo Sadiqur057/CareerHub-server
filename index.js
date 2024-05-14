@@ -32,13 +32,11 @@ app.use(cookieParser())
 
 // middlewares
 const logger = (req, res, next) => {
-  console.log("log info", req.method, req.url);
   next()
 }
 
 const verifyToken = (req, res, next) => {
   const token = req.cookies?.token;
-  console.log("token in the middleware", token);
   if (!token) {
     return res.status(401).send({ message: 'unauthorized access' })
   }
@@ -77,14 +75,12 @@ async function run() {
     // auth related api
     app.post('/jwt', async (req, res) => {
       const user = req.body;
-      console.log('user for token', user)
       const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1hr' })
       res.cookie('token', token, cookieOptions).send({ success: true })
     })
 
     app.post('/logout', async (req, res) => {
       const user = req.body;
-      console.log("logging out", user)
       res.clearCookie('token', { ...cookieOptions, maxAge: 0 }).send({ success: true })
     })
 
@@ -100,27 +96,22 @@ async function run() {
     app.get('/job-details/', logger, verifyToken, async (req, res) => {
       const id = req.query.id;
       const email = req.query.email;
-      console.log("user details", id, email)
-      console.log(req.user.email, email)
       if (req.user.email !== email) {
         return res.status(403).send({ message: "forbidden access" })
       }
       const query = { _id: new ObjectId(id) }
       const result = await jobsCollection.findOne(query);
-      console.log(result)
       res.send(result);
     })
 
     app.get('/my-jobs/:email', logger, verifyToken, async (req, res) => {
       const email = req.params.email;
-      console.log('token owner info', req.user)
 
       if (req.user.email !== req.params.email) {
         return res.status(403).send({ message: "forbidden access" })
       }
 
       const query = { user_email: email }
-      console.log(email)
       const cursor = jobsCollection.find(query);
       const result = await cursor.toArray();
       res.send(result);
@@ -129,14 +120,12 @@ async function run() {
 
     app.get('/my-applied-jobs/:email', logger, verifyToken, async (req, res) => {
       const email = req.params.email;
-      console.log('token owner info', req.user)
 
       if (req.user.email !== req.params.email) {
         return res.status(403).send({ message: "forbidden access" })
       }
 
       const query = { user_email: email }
-      console.log(email)
       const cursor = appliedJobsCollection.find(query);
       const result = await cursor.toArray();
       res.send(result);
@@ -144,7 +133,6 @@ async function run() {
 
     app.get('/search/:keyword', async (req, res) => {
       const keyword = req.params.keyword;
-      console.log("give data for ", keyword)
       const cursor = jobsCollection.find({
         job_title: {
           $regex: keyword,
@@ -171,7 +159,6 @@ async function run() {
 
     app.post('/applied-job', async (req, res) => {
       const data = req.body;
-      console.log(data)
       const result = await appliedJobsCollection.insertOne(data);
       res.send(result)
     })
@@ -182,7 +169,6 @@ async function run() {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) }
       const result = await jobsCollection.deleteOne(query)
-      console.log(result)
       res.send(result)
     })
 
@@ -190,9 +176,7 @@ async function run() {
     app.put('/edit-job/:id', async (req, res) => {
       const jobData = req.body;
       const id = req.params.id;
-      console.log(jobData)
       const filter = { _id: new ObjectId(id) }
-      console.log(id)
       const options = { upsert: true }
       const job_title = jobData.job_title
       const salary_range = jobData.salary_range
@@ -211,15 +195,12 @@ async function run() {
         }
       }
       const result = await jobsCollection.updateOne(filter, updatedDoc, options)
-      console.log(result);
       res.send(result)
     })
 
     app.put('/update-job/:id', async (req, res) => {
       const id = req.params.id
-      console.log(req.body)
       const applicants_number = req.body.newApplicantsNumber
-      console.log(id)
       const filter = { _id: new ObjectId(id) }
       const options = { upsert: true }
       const updatedDoc = {
@@ -228,7 +209,6 @@ async function run() {
         }
       }
       const result = await jobsCollection.updateOne(filter, updatedDoc, options)
-      console.log(result);
       res.send(result)
     })
 
