@@ -40,13 +40,13 @@ const verifyToken = (req, res, next) => {
   if (!token) {
     return res.status(401).send({ message: 'unauthorized access' })
   }
-  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
-    if (err) {
-      return res.status(401).send({ message: 'unauthorized access' })
-    }
-    req.user = decoded
-    next();
-  })
+  // jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
+  //   if (err) {
+  //     return res.status(401).send({ message: 'unauthorized access' })
+  //   }
+  //   req.user = decoded
+  //   next();
+  // })
 }
 
 
@@ -93,23 +93,23 @@ async function run() {
     })
 
     // get specific job details
-    app.get('/job-details/', logger, verifyToken, async (req, res) => {
+    app.get('/job-details/', logger, async (req, res) => {
       const id = req.query.id;
       const email = req.query.email;
-      if (req.user.email !== email) {
-        return res.status(403).send({ message: "forbidden access" })
-      }
+      // if (req.user.email !== email) {
+      //   return res.status(403).send({ message: "forbidden access" })
+      // }
       const query = { _id: new ObjectId(id) }
       const result = await jobsCollection.findOne(query);
       res.send(result);
     })
 
-    app.get('/my-jobs/:email', logger, verifyToken, async (req, res) => {
+    app.get('/my-jobs/:email', logger,  async (req, res) => {
       const email = req.params.email;
 
-      if (req.user.email !== req.params.email) {
-        return res.status(403).send({ message: "forbidden access" })
-      }
+      // if (req.user.email !== req.params.email) {
+      //   return res.status(403).send({ message: "forbidden access" })
+      // }
 
       const query = { user_email: email }
       const cursor = jobsCollection.find(query);
@@ -118,12 +118,12 @@ async function run() {
     })
 
 
-    app.get('/my-applied-jobs/:email', logger, verifyToken, async (req, res) => {
+    app.get('/my-applied-jobs/:email', logger,  async (req, res) => {
       const email = req.params.email;
 
-      if (req.user.email !== req.params.email) {
-        return res.status(403).send({ message: "forbidden access" })
-      }
+      // if (req.user.email !== req.params.email) {
+      //   return res.status(403).send({ message: "forbidden access" })
+      // }
 
       const query = { user_email: email }
       const cursor = appliedJobsCollection.find(query);
